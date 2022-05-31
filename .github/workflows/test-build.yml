@@ -8,6 +8,9 @@ on:
         type: string
 env:
   env_test: ${{ inputs.test }}
+  LAST_CHILD1: 'L1-1'
+  LAST_CHILD2: 'L2-1'
+  LAST_CHILD3: 'L3-1'
 jobs:
   test_job_name:
     name: test build job
@@ -15,6 +18,9 @@ jobs:
       matrix:
         node-version: [14.x]
     runs-on: ubuntu-latest
+    env:
+      LAST_CHILD2: 'L2-2'
+      LAST_CHILD3: 'L3-2'
     steps:
       - uses: actions/checkout@v2
       - name: show node version
@@ -24,7 +30,17 @@ jobs:
       - name: echo input value
         run: echo "first-'${{ github.event.inputs.test }}'; last- ${{ github.event.inputs }}"
       - name: echo env value
-        run: echo "env.env_test->${{env.env_test}}"
+        run: echo "env.env_test->$env_test"
+      - name: echo steps env value
+        env:
+          MY_VAR: Hi there! My name is
+          FIRST_NAME: Mona
+          MIDDLE_NAME: The
+          LAST_NAME: Octocat
+          LAST_CHILD3: 'L3-3'
+        run: |
+          echo $MY_VAR $FIRST_NAME $MIDDLE_NAME $LAST_NAME.
+          echo $LAST_CHILD1 $LAST_CHILD2 $LAST_CHILD3
   job2:
     name: test build job if
     strategy:
