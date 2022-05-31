@@ -1,0 +1,164 @@
+name: Deploy Reusing Workflow
+on:
+  workflow_dispatch:
+    inputs:
+      serviceType:
+        description: "Service Type For AWS"
+        required: true
+        default: "Lambda"
+        type: choice
+        options:
+          - Lambda
+          - Lambda-Layer
+        # - ECS
+        # - Glue
+      serviceName:
+        description: "Service Name For AWS"
+        required: true
+        default: "warning"
+        type: choice
+        options:
+          - lambda-layer
+          - lambda-convertlab-notify
+        # - glue-bgm-sync
+        # - ecs-sell
+        # - ecs-patient
+        # - ecs-manage
+        # - ecs-openapi
+        # - ecs-doctor
+env:
+  ENV_TYPE: q #d:dev q:qa p:prd
+  AWS_REGION: cn-northwest-1
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs: # steps.step1.outputs.result json string
+      serviceName: ${{ fromJSON(steps.step1.outputs.result).serviceName }}
+      envType: ${{ fromJSON(steps.step1.outputs.result).envtype }}
+      awsRegion: ${{ fromJSON(steps.step1.outputs.result).awsRegion }}
+      cpu: ${{ fromJSON(steps.step1.outputs.result).cpu }}
+      memory: ${{ fromJSON(steps.step1.outputs.result).memory }}
+      localServiceName: ${{ fromJSON(steps.step1.outputs.result).localServiceName }}
+      hasGUI: ${{ fromJSON(steps.step1.outputs.result).hasGUI }}
+    steps:
+      - uses: actions/github-script@v6
+        id: step1
+        name: deal with Ver
+        with:
+          script: | #nodejs16 code
+            const serviceType='${{github.event.inputs.serviceType}}';
+            const initServiceName='${{github.event.inputs.serviceName}}';
+            const serviceName=initServiceName.split('-').slice(1).join('-');
+            console.log(serviceName);
+            const result= {
+              serviceName:serviceName,
+              envtype:'q', //d:dev q:qa p:prd
+              awsRegion:'cn-northwest-1',
+              cpu:0,
+              memory:0,
+              localServiceName:'',
+              hasGUI:false
+            };
+            if(serviceType == 'ECS'){
+              const ecsDockerSizeSetting={
+                sell:{
+                  cpu:512,
+                  memory:1024,
+                  localServiceName:'qywechat',
+                  hasGUI:true
+                },
+                patient:{
+                  cpu:512,
+                  memory:1024,
+                  localServiceName:'patient',
+                  hasGUI:true
+                },
+                manage:{
+                  cpu:512,
+                  memory:1024,
+                  localServiceName:'management',
+                  hasGUI:true
+                },
+                openapi:{
+                  cpu:512,
+                  memory:1024,
+                  localServiceName:'openapi',
+                  hasGUI:false
+                },
+                doctor:{
+                  cpu:512,
+                  memory:1024,
+                  localServiceName:'doctor',
+                  hasGUI:false
+                }
+              }
+              result.cpu=ecsDockerSizeSetting[serviceName].cpu;
+              result.memory=ecsDockerSizeSetting[serviceName].memory;
+              result.localServiceName=ecsDockerSizeSetting[serviceName].localServiceName;
+              result.hasGUI=ecsDockerSizeSetting[serviceName].hasGUI;
+            }
+            return result;
+  call_lambda_layer_workflow:
+    if: github.event.inputs.serviceType == 'Lambda-Layer'
+    # {path}/{filename}@{ref}
+    # https://docs.github.com/en/enterprise-server@3.4/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses
+    # cannot specify version when calling local workflows
+    uses: ./.github/workflows/lambda-layer.yml
+    needs: prepare
+    with:
+      awsregion: ${{ needs.prepare.outputs.awsRegion }}
+      envtype: ${{ needs.prepare.outputs.envType }} # 跟着分支走 操作时能少选择一个
+    secrets:
+      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_QA }}
+      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_QA }}
+      # layer: ${{}}
+  test-job:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [prepare]
+    steps:
+      - name: test
+        run: |
+          echo "'${{needs.prepare.outputs.cpu}}' ${{job.status}}"
+
+  call-lambda-workflow:
+    if: github.event.inputs.serviceType == 'Lambda'
+    uses: ./.github/workflows/lambda.yml
+    needs: [prepare]
+    with:
+      awsregion: ${{ needs.prepare.outputs.awsRegion }}
+      envtype: ${{ needs.prepare.outputs.envType }} # 跟着分支走 操作时能少选择一个
+      lambda: ${{ needs.prepare.outputs.serviceName }}
+      # lambda: ${{format(github.event.inputs.serviceName,'d')}}
+    secrets:
+      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_QA }}
+      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_QA }}
+      # lambda: ${{}}
+  call-glue-workflow:
+    if: github.event.inputs.serviceType == 'Glue'
+    uses: ./.github/workflows/glue.yml
+    needs: prepare
+    with:
+      awsregion: ${{ needs.prepare.outputs.awsRegion }}
+      envtype: ${{ needs.prepare.outputs.envType }}
+      glue: ${{ needs.prepare.outputs.serviceName }}
+      s3: lly-nw-com-lccp-d-s3-pri-01
+    secrets:
+      aws-access-key-id: ${{ secrets.DEV_AWS_PRI_S3_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.DEV_AWS_PRI_S3_SECRET_ACCESS_KEY }}
+  call-ecs-workflow:
+    if: github.event.inputs.serviceType == 'ECS'
+    uses: ./.github/workflows/ecs.yml
+    needs: prepare
+    with:
+      awsregion: ${{ needs.prepare.outputs.awsRegion }}
+      envtype: ${{ needs.prepare.outputs.envType }}
+      ecsname: ${{ needs.prepare.outputs.serviceName }}
+      cpu: ${{ needs.prepare.outputs.cpu }} #环境变量应该都死作为字符串处理
+      memory: ${{ needs.prepare.outputs.memory }}
+      localServiceName: ${{ needs.prepare.outputs.localServiceName }}
+      hasGUI: ${{ needs.prepare.outputs.hasGUI }}
+    secrets:
+      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_QA }}
+      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_QA }}
