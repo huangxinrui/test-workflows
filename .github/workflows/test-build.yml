@@ -13,9 +13,11 @@ jobs:
     name: test build job
     strategy:
       matrix:
-        node-version: [12.x, 14.x]
+        node-version: [14.x]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: test step 2
         run: node -v
+      - name: test step 2
+        run: git branch
