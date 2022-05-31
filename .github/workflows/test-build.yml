@@ -1,10 +1,11 @@
 name: test build
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       test:
-       required: true
-       type: string
+        description: "Service Type For AWS"
+        required: true
+        type: string
 env:
   env_test: ${{ inputs.test }}
 jobs:
