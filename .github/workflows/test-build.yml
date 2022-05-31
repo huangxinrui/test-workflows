@@ -17,7 +17,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: test step 2
+      - name: show node version
         run: node -v
-      - name: test step 2
+      - name: show branch
         run: git branch
+      - name: echo input value
+        run: echo "first-'${{ github.event.inputs.test }}'; last- ${{ github.event.inputs }}"
+      - name: echo env value
+        run: echo "env.env_test->${{env.env_test}}"
+  job2:
+    name: test build job if
+    strategy:
+      matrix:
+        node-version: [14.x]
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test == 'job2'
+    steps:
+      - uses: actions/checkout@v2
+      - name: show node version
+        run: node -v
+      - name: show branch
+        run: git branch
+      - name: echo input value
+        run : echo "first-'${{ github.event.inputs.test }}'; last- ${{ github.event.inputs.test }}"
