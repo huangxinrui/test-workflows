@@ -42,24 +42,10 @@ jobs:
           echo $MY_VAR $FIRST_NAME $MIDDLE_NAME $LAST_NAME.
           echo $LAST_CHILD1 $LAST_CHILD2 $LAST_CHILD3
       - name: check folder
+        if: github.event.inputs.test == 'check'
         run: |
           if [[ ! -d "./.github" ]]; then
             echo "文件夹不存在"
           else
             echo "文件夹存在"
           fi
-  job2:
-    name: test build job if
-    strategy:
-      matrix:
-        node-version: [14.x]
-    runs-on: ubuntu-latest
-    if: github.event.inputs.test == 'job2'
-    steps:
-      - uses: actions/checkout@v2
-      - name: show node version
-        run: node -v
-      - name: show branch
-        run: git branch
-      - name: echo input value
-        run : echo "first-'${{ github.event.inputs.test }}'; last- ${{ github.event.inputs.test }}"
