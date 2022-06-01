@@ -57,6 +57,9 @@ jobs:
           else
             echo "文件夹存在"
           fi
+      - name: show hash 0
+        if: node -v == 'v16.15.0'
+        run: echo "success"
       - name: show hash
         run: echo hashFiles('./.github/workflows/test-build.yml')
       - name: show hash 2
