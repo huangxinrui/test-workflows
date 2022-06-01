@@ -42,7 +42,15 @@ jobs:
           echo $MY_VAR $FIRST_NAME $MIDDLE_NAME $LAST_NAME.
           echo $LAST_CHILD1 $LAST_CHILD2 $LAST_CHILD3
       - name: check folder
-        if: github.event.inputs.test == 'check'
+        if: hashFiles('test-build.yml') != ''
+        run: |
+          if [[ ! -d "./.github" ]]; then
+            echo "文件夹不存在"
+          else
+            echo "文件夹存在"
+          fi
+      - name: check folder 2
+        if: hashFiles('./.github/test-build.yml') != ''
         run: |
           if [[ ! -d "./.github" ]]; then
             echo "文件夹不存在"
