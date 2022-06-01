@@ -41,6 +41,13 @@ jobs:
         run: |
           echo $MY_VAR $FIRST_NAME $MIDDLE_NAME $LAST_NAME.
           echo $LAST_CHILD1 $LAST_CHILD2 $LAST_CHILD3
+      - name: check folder
+        run: |
+          if [[ ! -d "./pods" ]]; then
+            echo "文件夹不存在"
+          else
+            echo "文件夹存在"
+          fi
   job2:
     name: test build job if
     strategy:
