@@ -15,7 +15,7 @@ on:
       serviceName:
         description: "Service Name For AWS"
         required: true
-        default: "warning"
+        default: "lambda-convertlab-notify"
         type: choice
         options:
           - lambda-layer
