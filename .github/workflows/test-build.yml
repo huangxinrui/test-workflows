@@ -57,6 +57,18 @@ jobs:
           else
             echo "文件夹存在"
           fi
+      - id: step1
+        run: echo "::set-output name=test::hello"
+      - name: step2
+        run: echo "::set-output name=test::hello"
+      - name: 'test1'
+        run: echo ${{ steps.step1.outputs.test }}
+      - name: 'test2'
+        run: echo ${{ steps.step2.outputs.test }}
+      - name: 'test3'
+        run: echo ${{ steps.step1.outputs }}
+      - name: 'test4'
+        run: echo ${{ steps.step2.outputs }}
       - name: show hash 0
         if: node -v == 'v16.15.0'
         run: echo "success"
