@@ -43,7 +43,7 @@ jobs:
           echo $LAST_CHILD1 $LAST_CHILD2 $LAST_CHILD3
       - name: check folder
         run: |
-          if [[ ! -d "./pods" ]]; then
+          if [[ ! -d "./.github" ]]; then
             echo "文件夹不存在"
           else
             echo "文件夹存在"
