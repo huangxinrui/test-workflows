@@ -6,6 +6,23 @@ name: CI
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      serviceType:
+        description: "Service Type For AWS"
+        required: true
+        default: "Lambda"
+        type: choice
+        options:
+          - Lambda-master
+          - Lambda-Layer
+      test:
+        description: "only in test"
+        required: true
+        default: "Lambda"
+        type: choice
+        options:
+          - Lambda-master
+          - Lambda-Layer
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
