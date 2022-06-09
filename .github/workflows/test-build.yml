@@ -4,7 +4,7 @@ on:
     inputs:
       test:
         description: "Service Type For AWS"
-        required: true
+        required: false
         type: string
 env:
   env_test: ${{ inputs.test }}
