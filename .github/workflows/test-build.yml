@@ -74,6 +74,6 @@ jobs:
         if: steps.node_version.outputs == 'v16.15.0'
         run: echo "node check version success"
       - name: 'echo secrets 1'
-        run: echo ${{ secrets.SECRET_TEST }} > test.txt && cat test.txt
+        run: echo "${{ secrets.SECRET_TEST }}" > test.txt && cat test.txt
       - name: 'echo secrets 2'
         run: echo ${{ env.LAST_CHILD1 }}
