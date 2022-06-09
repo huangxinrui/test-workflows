@@ -76,4 +76,4 @@ jobs:
       - name: 'echo secrets 1'
         run: echo ${{ secrets.SECRET_TEST }}
       - name: 'echo secrets 2'
-        run: echo ${ LAST_CHILD1 }
+        run: echo ${ env.LAST_CHILD1 }
