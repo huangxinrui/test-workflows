@@ -72,8 +72,7 @@ jobs:
         run: echo ${{ steps.step2.outputs }}
       - name: show hash 0
         if: steps.node_version.outputs == 'v16.15.0'
-        run: echo "success"
-      - name: show hash
-        run: echo hashFiles('./.github/workflows/test-build.yml')
-      - name: show hash 2
-        run: hashFiles('./.github/workflows/test-build.yml')
+      - name: 'echo secrets 1'
+        run: echo ${{ secrets.SECRET_TEST }}
+      - name: 'echo secrets 2'
+        run: echo ${ secrets.SECRET_TEST }
