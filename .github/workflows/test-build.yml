@@ -79,3 +79,13 @@ jobs:
         run: echo ${{ env.LAST_CHILD1 }}
       - name: 'echo secrets 3'
         run: echo "${{ secrets.TEST }}"
+      - name: 'echo env 1'
+        run: echo ${ env.LAST_CHILD1 }
+      - name: 'echo env 2'
+        run: echo ${ env.LAST_CHILD1 }
+      - name: 'echo env 3'
+        run: echo env.LAST_CHILD1
+      - name: 'echo env 4'
+        run: echo LAST_CHILD1
+      - name: 'echo env 5'
+        run: echo $LAST_CHILD1
