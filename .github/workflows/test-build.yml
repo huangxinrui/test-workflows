@@ -95,4 +95,4 @@ jobs:
       - name: 'echo env 6'
         run: echo $LAST_CHILD1
       - name: 'echo env 7'
-        run: echo ${ LAST_CHILD1 }
+        run: echo ${LAST_CHILD1}
