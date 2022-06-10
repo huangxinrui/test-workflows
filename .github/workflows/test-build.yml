@@ -82,6 +82,7 @@ jobs:
       # 错误写法 1
       # - name: 'echo env 1'
       #   run: echo ${ env.LAST_CHILD1 }
+      # >>>>>>>>>>>>>>>>>> success env
       - name: 'echo env 2'
         run: echo ${{ env.LAST_CHILD1 }}
       - name: 'echo env 3'
@@ -90,5 +91,8 @@ jobs:
         run: echo $env.LAST_CHILD1
       - name: 'echo env 5'
         run: echo LAST_CHILD1
+      # >>>>>>>>>>>>>>>>>> success env
       - name: 'echo env 6'
         run: echo $LAST_CHILD1
+      - name: 'echo env 7'
+        run: echo ${ LAST_CHILD1 }
