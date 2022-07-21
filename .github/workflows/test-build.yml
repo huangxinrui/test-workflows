@@ -26,6 +26,14 @@ jobs:
       - name: show node version
         id: node_version
         run: node -v
+      - name: Init Docker File
+        id: init-docker-file
+        uses: nowactions/envsubst@v1
+        with:
+          input: ./Dockerfile
+          output: ./docker-file-final
+        env:
+          version: v1.0
       - name: show branch
         run: git branch
       - name: echo input value
