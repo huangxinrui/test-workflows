@@ -34,6 +34,8 @@ jobs:
           output: ./docker-file-final
         env:
           version: v1.0
+      - name: show dockerfile
+        run: cat ./docker-file-final
       - name: show branch
         run: git branch
       - name: echo input value
